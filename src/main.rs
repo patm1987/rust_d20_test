@@ -1,4 +1,7 @@
+extern crate rand;
+
 mod player;
+mod dice;
 
 use player::PlayerBuilder;
 use std::io;
@@ -13,6 +16,9 @@ fn main() {
 
 	player_builder.name(name);
 	let player = player_builder.finalize();
+
+	let roll = dice::roll(3, 6);
+	println!("Rolled a {}", roll);
 
 	println!("Created player {}", player.get_name());
 }
