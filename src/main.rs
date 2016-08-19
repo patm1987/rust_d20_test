@@ -1,5 +1,6 @@
 extern crate rand;
 
+mod ability;
 mod player;
 mod dice;
 
