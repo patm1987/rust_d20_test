@@ -1,10 +1,13 @@
 pub enum Action {
+	Quit,
 	Look,
 	Unknown
 }
 
 pub fn parse_action(action_string: &str) -> Action {
-	if action_string.to_lowercase().starts_with("look") {return Action::Look;}
+	let lower_string = action_string.to_lowercase();
+	if lower_string.starts_with("look") {return Action::Look;}
+	if lower_string.starts_with("quit") {return Action::Quit;}
 	Action::Unknown
 }
 
@@ -32,6 +35,14 @@ mod tests {
 	fn test_look_handles_mixed_case() {
 		match parse_action("LoOk") {
 			Action::Look => (),
+			_ => assert!(false)
+		}
+	}
+
+	#[test]
+	fn test_quit() {
+		match parse_action("quit") {
+			Action::Quit => (),
 			_ => assert!(false)
 		}
 	}

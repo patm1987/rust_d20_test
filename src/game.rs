@@ -1,6 +1,7 @@
 
 use action;
 use action::Action;
+use confirmation;
 use map::Map;
 use player::Player;
 use room::Room;
@@ -20,7 +21,8 @@ impl<'a> Game<'a> {
 	pub fn start(&mut self) {
 		println!("Game Started");
 
-		loop {
+		let mut running = true;
+		while running {
 			println!("You've entered \"{}\"", self.current_room.get_title());
 			println!("{}", self.current_room.get_first_description());
 			println!("What would you like to do?");
@@ -28,9 +30,17 @@ impl<'a> Game<'a> {
 			let mut action = String::new();
 			io::stdin().read_line(&mut action).expect("Failed to read line...");
 			match action::parse_action(&action) {
+				Action::Quit => if self.user_confirms_quit() {running = false;},
 				Action::Look => println!("{}", self.current_room.get_description()),
 				_ => println!("I didn't understand \"{}\"", action),
 			};
 		}
+	}
+
+	fn user_confirms_quit(&self) -> bool {
+		println!("Giving up so soon {}?", self.player.get_name());
+		let mut confirmation = String::new();
+		io::stdin().read_line(&mut confirmation).expect("Failed to read line...");
+		confirmation::parse_confirmation(&confirmation)
 	}
 }

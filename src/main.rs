@@ -2,6 +2,7 @@ extern crate rand;
 
 mod ability;
 mod action;
+mod confirmation;
 mod dice;
 mod game;
 mod map;
