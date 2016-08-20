@@ -2,6 +2,7 @@
 use map::Map;
 use player::Player;
 use room::Room;
+use std::io;
 
 pub struct Game<'a> {
 	player: Player,
@@ -16,7 +17,14 @@ impl<'a> Game<'a> {
 
 	pub fn start(&mut self) {
 		println!("Game Started");
-		println!("You've entered \"{}\"", self.current_room.get_title());
-		println!("{}", self.current_room.get_first_description());
+
+		loop {
+			println!("You've entered \"{}\"", self.current_room.get_title());
+			println!("{}", self.current_room.get_first_description());
+			println!("What would you like to do?");
+
+			let mut action = String::new();
+			io::stdin().read_line(&mut action).expect("Failed to read action!");
+		}
 	}
 }
