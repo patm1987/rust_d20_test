@@ -1,14 +1,15 @@
 extern crate rand;
 
 mod ability;
+mod dice;
 mod game;
 mod map;
 mod player;
-mod dice;
+mod room;
+mod test_world;
 
 use ability::{Ability, AbilityFactory};
 use game::Game;
-use map::Map;
 use player::PlayerBuilder;
 use std::io;
 
@@ -77,8 +78,9 @@ fn main() {
 		player.get_charisma().get_modifier());
 
 	println!("Building game...");
-	let map = Map::new();
-	let game = Game::new(player, map);
+	let map = test_world::build_world();
+	let mut game = Game::new(player, &map);
+	game.start();
 }
 
 fn select_ability(rolls: &mut Vec<Ability>, name: &str) -> Ability {
