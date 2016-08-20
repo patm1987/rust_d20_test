@@ -1,4 +1,5 @@
 
+#[derive(Clone)]
 pub struct Ability {
 	roll: i32,
 	modifier: i32

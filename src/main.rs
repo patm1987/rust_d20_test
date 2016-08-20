@@ -4,6 +4,7 @@ mod ability;
 mod player;
 mod dice;
 
+use ability::{Ability, AbilityFactory};
 use player::PlayerBuilder;
 use std::io;
 
@@ -15,8 +16,7 @@ fn main() {
 	let mut name = String::new();
 	io::stdin().read_line(&mut name).expect("Failed to read name");
 
-	player_builder.name(name);
-	let player = player_builder.finalize();
+	player_builder.name(name.trim().to_string());
 
 	let mut rolls;
 	loop {
@@ -33,20 +33,70 @@ fn main() {
 		}
 	}
 
-	println!("Rolled {} die with results:", rolls.len());
-	for roll in rolls {
-		println!("\t{}", roll);
+	let mut rolls: Vec<Ability> = rolls
+		.iter()
+		.map(|roll| AbilityFactory::new().roll(*roll).finalize())
+		.collect();
+
+	player_builder.strength(select_ability(&mut rolls, "Strength"));
+	player_builder.dexterity(select_ability(&mut rolls, "Dexterity"));
+	player_builder.constitution(select_ability(&mut rolls, "Constitution"));
+	player_builder.intelligence(select_ability(&mut rolls, "Intelligence"));
+	player_builder.wisdom(select_ability(&mut rolls, "Wisdom"));
+	player_builder.charisma(select_ability(&mut rolls, "Charisma"));
+
+	let player = player_builder.finalize();
+	println!("Created player {}", player.get_name());
+	println!(
+		"STR: {} -> {:+}",
+		player.get_strength().get_roll(),
+		player.get_strength().get_modifier());
+	println!(
+		"DEX: {} -> {:+}",
+		player.get_dexterity().get_roll(),
+		player.get_dexterity().get_modifier());
+	println!(
+		"CON: {} -> {:+}",
+		player.get_constitution().get_roll(),
+		player.get_constitution().get_modifier());
+	println!(
+		"INT: {} -> {:+}",
+		player.get_intelligence().get_roll(),
+		player.get_intelligence().get_modifier());
+	println!(
+		"WIS: {} -> {:+}",
+		player.get_wisdom().get_roll(),
+		player.get_wisdom().get_modifier());
+	println!(
+		"CHA: {} -> {:+}",
+		player.get_charisma().get_roll(),
+		player.get_charisma().get_modifier());
+}
+
+fn select_ability(rolls: &mut Vec<Ability>, name: &str) -> Ability {
+	println!("Ability Scores Available:");
+	for (index, roll) in rolls.iter().enumerate() {
+		println!("[{}] {} -> {}", index, roll.get_roll(), roll.get_modifier());
 	}
 
-	println!("Generating:\n\
-		Strength\n\
-		Dexterity\n\
-		Constitution\n\
-		Intelligence\n\
-		Wisdom\n\
-		Charisma");
+	loop {
+		println!("Select Ability for {}:", name);
+		let mut selection = String::new();
+		io::stdin().read_line(&mut selection).expect("Failed to read line");
+		let selection: i32 = match selection.trim().parse() {
+			Ok(num) => num,
+			Err(_) => {
+				println!("Couldn't parse {}, try again!", selection);
+				continue;
+			}
+		};
+		if selection < 0 || selection >= rolls.len() as i32 {
+			println!("{} is not a valid index", selection);
+			continue;
+		}
 
-	println!("Created player {}", player.get_name());
+		return rolls.remove(selection as usize);
+	}
 }
 
 fn rolls_valid(rolls: &Vec<i32>) -> bool {

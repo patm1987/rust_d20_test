@@ -1,3 +1,6 @@
+use ability::{Ability, AbilityFactory};
+
+#[derive(Clone)]
 pub struct Player {
 	name: String,
 	strength: Ability,
@@ -20,13 +23,45 @@ pub struct PlayerBuilder {
 
 impl Player {
 	pub fn get_name(&self) -> &String {
-		return &self.name;
+		&self.name
+	}
+
+	pub fn get_strength(&self) -> &Ability {
+		&self.strength
+	}
+
+	pub fn get_dexterity(&self) -> &Ability {
+		&self.dexterity
+	}
+
+	pub fn get_constitution(&self) -> &Ability {
+		&self.constitution
+	}
+
+	pub fn get_intelligence(&self) -> &Ability {
+		&self.intelligence
+	}
+
+	pub fn get_wisdom(&self) -> &Ability {
+		&self.wisdom
+	}
+
+	pub fn get_charisma(&self) -> &Ability {
+		&self.charisma
 	}
 }
 
 impl PlayerBuilder {
 	pub fn new() -> PlayerBuilder {
-		PlayerBuilder { name: "None".to_string() }
+		PlayerBuilder {
+			name: "None".to_string(),
+			strength: AbilityFactory::new().finalize(),
+			dexterity: AbilityFactory::new().finalize(),
+			constitution: AbilityFactory::new().finalize(),
+			intelligence: AbilityFactory::new().finalize(),
+			wisdom: AbilityFactory::new().finalize(),
+			charisma: AbilityFactory::new().finalize()
+		}
 	}
 
 	pub fn name(&mut self, name: String) -> &mut PlayerBuilder {
@@ -54,7 +89,7 @@ impl PlayerBuilder {
 		self
 	}
 
-	pub fn wisdom(&mut sellf, wisdom: Ability) -> &mut PlayerBuilder {
+	pub fn wisdom(&mut self, wisdom: Ability) -> &mut PlayerBuilder {
 		self.wisdom = wisdom;
 		self
 	}
@@ -67,12 +102,12 @@ impl PlayerBuilder {
 	pub fn finalize(&mut self) -> Player {
 		Player {
 			name: self.name.clone(),
-			strength: self.strength,
-			dexterity: self.dexterity,
-			constitution: self.constitution,
-			intelligence: self.intelligence,
-			wisdom: self.wisdom,
-			charisma: self.charisma
+			strength: self.strength.clone(),
+			dexterity: self.dexterity.clone(),
+			constitution: self.constitution.clone(),
+			intelligence: self.intelligence.clone(),
+			wisdom: self.wisdom.clone(),
+			charisma: self.charisma.clone()
 		}
 	}
 }
