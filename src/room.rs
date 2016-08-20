@@ -19,4 +19,8 @@ impl Room {
 	pub fn get_first_description(&self) -> &String {
 		&self.first_description
 	}
+
+	pub fn get_description(&self) -> &String {
+		&self.description
+	}
 }

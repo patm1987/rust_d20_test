@@ -1,4 +1,6 @@
 
+use action;
+use action::Action;
 use map::Map;
 use player::Player;
 use room::Room;
@@ -24,7 +26,11 @@ impl<'a> Game<'a> {
 			println!("What would you like to do?");
 
 			let mut action = String::new();
-			io::stdin().read_line(&mut action).expect("Failed to read action!");
+			io::stdin().read_line(&mut action).expect("Failed to read line...");
+			match action::parse_action(&action) {
+				Action::Look => println!("{}", self.current_room.get_description()),
+				_ => println!("I didn't understand \"{}\"", action),
+			};
 		}
 	}
 }
