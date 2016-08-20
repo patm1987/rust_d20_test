@@ -28,21 +28,25 @@ impl AbilityFactory {
 		self
 	}
 
+	pub fn roll_to_ability_modifier(roll: i32) -> i32 {
+		match roll {
+			2 | 3 => -4,
+			4 | 5 => -3,
+			6 | 7 => -2,
+			8 | 9 => -1,
+			10 | 11 => 0,
+			12 | 13 => 1,
+			14 | 15 => 2,
+			16 | 17 => 3,
+			18 | 19 => 4,
+			_ => if roll < 2 { -5 } else { 5 },
+		}
+	}
+
 	pub fn finalize(&self) -> Ability {
 		Ability {
 			roll: self.roll,
-			modifier: match self.roll {
-				2 | 3 => -4,
-				4 | 5 => -3,
-				6 | 7 => -2,
-				8 | 9 => -1,
-				10 | 11 => 0,
-				12 | 13 => 1,
-				14 | 15 => 2,
-				16 | 17 => 3,
-				18 | 19 => 4,
-				_ => if self.roll < 2 { -5 } else { 5 },
-			}
+			modifier: AbilityFactory::roll_to_ability_modifier(self.roll),
 		}
 	}
 }
