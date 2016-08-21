@@ -2,6 +2,7 @@
 use action;
 use action::Action;
 use confirmation;
+use confirmation::Confirmation;
 use map::Map;
 use player::Player;
 use room::Room;
@@ -38,9 +39,18 @@ impl<'a> Game<'a> {
 	}
 
 	fn user_confirms_quit(&self) -> bool {
-		println!("Giving up so soon {}?", self.player.get_name());
-		let mut confirmation = String::new();
-		io::stdin().read_line(&mut confirmation).expect("Failed to read line...");
-		confirmation::parse_confirmation(&confirmation)
+		loop {
+			println!("Giving up so soon {}?", self.player.get_name());
+			let mut confirmation = String::new();
+			io::stdin().read_line(&mut confirmation).expect("Failed to read line...");
+			match confirmation::parse_confirmation(&confirmation) {
+				Confirmation::Yes => return true,
+				Confirmation::No => return false,
+				_ => {
+					println!("What was that?");
+					continue
+				}
+			}
+		}
 	}
 }
