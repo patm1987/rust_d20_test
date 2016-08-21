@@ -32,7 +32,7 @@ impl<'a> Game<'a> {
 			io::stdin().read_line(&mut action).expect("Failed to read line...");
 			match action::parse_action(&action) {
 				Action::Quit => if self.user_confirms_quit() {running = false;},
-				Action::Look => println!("{}", self.current_room.get_description()),
+				Action::Look(_) => println!("{}", self.current_room.get_description()),
 				_ => println!("I didn't understand \"{}\"", action),
 			};
 		}
