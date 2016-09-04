@@ -80,8 +80,8 @@ fn main() {
 		player.get_charisma().get_modifier());
 
 	println!("Building game...");
-	let map = test_world::build_world();
-	let mut game = Game::new(player, &map);
+	let mut map = test_world::build_world();
+	let mut game = Game::new(player, &mut map);
 	game.start();
 }
 

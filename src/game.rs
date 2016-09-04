@@ -7,32 +7,43 @@ use map::Map;
 use player::Player;
 use room::Room;
 use std::io;
+use std::rc::Rc;
 
 pub struct Game<'a> {
 	player: Player,
-	map: &'a Map,
-	current_room: &'a Room
+	map: &'a mut Map,
+	current_room: Option<Rc<Room>>,
 }
 
 impl<'a> Game<'a> {
-	pub fn new(player: Player, map: &'a Map) -> Game<'a> {
-		Game{player: player, map: map, current_room: map.get_start_room()}
+	pub fn new(player: Player, map: &mut Map) -> Game {
+		Game{player: player, map: map, current_room: None}
 	}
 
-	pub fn start(&mut self) {
+	pub fn start(&'a mut self) {
 		println!("Game Started");
 
 		let mut running = true;
 		while running {
-			println!("You've entered \"{}\"", self.current_room.get_title());
-			println!("{}", self.current_room.get_first_description());
+			let room:Rc<Room> = match self.current_room {
+				Some(ref ref_room) => ref_room.clone(),
+				None => {
+					self.current_room = Some(self.map.get_start_room());
+					self.current_room.clone().unwrap()
+				}
+			};
+			println!("You've entered \"{}\"", room.get_title());
+			if !room.is_visited() {
+				println!("{}", room.get_first_description());
+				room.mark_visited();
+			}
 			println!("What would you like to do?");
 
 			let mut action = String::new();
 			io::stdin().read_line(&mut action).expect("Failed to read line...");
 			match action::parse_action(&action) {
 				Action::Quit => if self.user_confirms_quit() {running = false;},
-				Action::Look(_) => println!("{}", self.current_room.get_description()),
+				Action::Look(_) => println!("{}", room.get_description()),
 				_ => println!("I didn't understand \"{}\"", action),
 			};
 		}
