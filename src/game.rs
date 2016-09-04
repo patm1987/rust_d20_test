@@ -20,48 +20,22 @@ impl<'a> Game<'a> {
 		Game{player: player, map: map, current_room: None}
 	}
 
-	pub fn start(&'a mut self) {
-		println!("Game Started");
+	pub fn start(&mut self) -> String {
+		let mut out_str: String = "Game Started".into();
+		self.current_room = Some(self.map.get_start_room());
+		out_str.push('\n');
+		let current_room: Rc<Room> = self.get_current_room();
+		out_str.push_str(current_room.get_first_description());
+		current_room.mark_visited();
 
-		let mut running = true;
-		while running {
-			let room:Rc<Room> = match self.current_room {
-				Some(ref ref_room) => ref_room.clone(),
-				None => {
-					self.current_room = Some(self.map.get_start_room());
-					self.current_room.clone().unwrap()
-				}
-			};
-			println!("You've entered \"{}\"", room.get_title());
-			if !room.is_visited() {
-				println!("{}", room.get_first_description());
-				room.mark_visited();
-			}
-			println!("What would you like to do?");
-
-			let mut action = String::new();
-			io::stdin().read_line(&mut action).expect("Failed to read line...");
-			match action::parse_action(&action) {
-				Action::Quit => if self.user_confirms_quit() {running = false;},
-				Action::Look(_) => println!("{}", room.get_description()),
-				_ => println!("I didn't understand \"{}\"", action),
-			};
-		}
+		out_str
 	}
 
-	fn user_confirms_quit(&self) -> bool {
-		loop {
-			println!("Giving up so soon {}?", self.player.get_name());
-			let mut confirmation = String::new();
-			io::stdin().read_line(&mut confirmation).expect("Failed to read line...");
-			match confirmation::parse_confirmation(&confirmation) {
-				Confirmation::Yes => return true,
-				Confirmation::No => return false,
-				_ => {
-					println!("What was that?");
-					continue
-				}
-			}
-		}
+	pub fn get_current_room(&self) -> Rc<Room> {
+		self.current_room.clone().unwrap()
+	}
+
+	pub fn get_player(&self) -> &Player {
+		&self.player
 	}
 }

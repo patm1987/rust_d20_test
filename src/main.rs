@@ -11,6 +11,8 @@ mod room;
 mod test_world;
 
 use ability::{Ability, AbilityFactory};
+use action::Action;
+use confirmation::Confirmation;
 use game::Game;
 use player::PlayerBuilder;
 use std::io;
@@ -82,7 +84,37 @@ fn main() {
 	println!("Building game...");
 	let mut map = test_world::build_world();
 	let mut game = Game::new(player, &mut map);
-	game.start();
+	println!("{}", game.start());
+
+	let mut running = true;
+	while running {
+		println!("You're in \"{}\"", game.get_current_room().get_title());
+		println!("What would you like to do?");
+
+		let mut action = String::new();
+		io::stdin().read_line(&mut action).expect("Failed to read line...");
+		match action::parse_action(&action) {
+			Action::Quit => if user_confirms_quit(game.get_player().get_name()) {running = false;},
+			Action::Look(_) => println!("{}", game.get_current_room().get_description()),
+			_ => println!("I didn't understand \"{}\"", action),
+		};
+	}
+}
+
+fn user_confirms_quit(name: &str) -> bool {
+	loop {
+		println!("Giving up so soon {}?", name);
+		let mut confirmation = String::new();
+		io::stdin().read_line(&mut confirmation).expect("Failed to read line...");
+		match confirmation::parse_confirmation(&confirmation) {
+			Confirmation::Yes => return true,
+			Confirmation::No => return false,
+			_ => {
+				println!("What was that?");
+				continue
+			}
+		}
+	}
 }
 
 fn select_ability(rolls: &mut Vec<Ability>, name: &str) -> Ability {
